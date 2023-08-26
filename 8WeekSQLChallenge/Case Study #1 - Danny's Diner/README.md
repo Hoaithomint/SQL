@@ -41,10 +41,16 @@ Solution
 ```sql
 SELECT 
 	customer_id
-    ,SUM(price) AS total_amount
+	,SUM(price) AS total_amount
 FROM dannys_diner.sales s
 LEFT JOIN dannys_diner.menu m
 ON s.product_id = m.product_id
 GROUP BY customer_id
 ORDER BY total_amount DESC;
 ```
+#### Result set:
+| customer_id | total_amount|
+| ----------- | ----------- |
+| A           | 76          |
+| B           | 74          |
+| C           | 36          |
