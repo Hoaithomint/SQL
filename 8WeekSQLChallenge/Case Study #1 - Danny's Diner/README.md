@@ -1,4 +1,8 @@
 # CASE STUDY #1: DANNY 'S DINNER
+
+<p align="center">
+<img src="https://8weeksqlchallenge.com/images/case-study-designs/1.png" alt="Image" width="450" height="450">
+
 View the case study [here](https://8weeksqlchallenge.com/case-study-1/)
 
 ## Table Of Contents
