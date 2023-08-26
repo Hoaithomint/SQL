@@ -1,3 +1,13 @@
+###  1. What is the unique count and total amount for each transaction type?
+
+```sql
+SELECT txn_type,
+       count(*) AS unique_count,
+       sum(txn_amount) AS total_amont
+FROM customer_transactions
+GROUP BY txn_type;
+``` 
+
 Introduction
 -
 
