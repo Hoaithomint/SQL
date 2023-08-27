@@ -4,6 +4,7 @@
 - Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
 - Origin code on BigQuery [here](https://console.cloud.google.com/bigquery?sq=419516868446:ee029ce0d51b402aa4de14f41b7a2950)
 
+
 ## Case Study Questions
 1. Calculate total visit, pageview, transaction for Jan, Feb and March 2017 order by month
 2. Bounce rate per traffic source in July 2017 (Bounce_rate = num_bounce/total_visit) (order by total_visit DESC)
@@ -37,6 +38,7 @@ ORDER BY month;
 
 ***
 #### 2. Bounce rate per traffic source in July 2017 (Bounce_rate = num_bounce/total_visit) (order by total_visit DESC)
+Bounce session is the session that user does not raise any click after landing on the website
 
 ```sql
 SELECT  
@@ -93,6 +95,15 @@ ORDER BY revenue DESC;
 
 ***
 #### 4. Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017
+###### Note: 
+fullVisitorId field is user id.
+We have to: UNNEST(hits) AS hits, UNNEST(hits.product) to access productRevenue
+
+- Purchaser: totals.transactions >=1; productRevenue is not null.
+
+- Non-purchaser: totals.transactions IS NULL;  product.productRevenue is null 
+
+- Avg pageview = total pageview / number unique user.
 
 ```sql
 WITH APP AS (
@@ -137,6 +148,8 @@ ORDER BY month;
 
 ***
 #### 5. Average number of transactions per user that made a purchase in July 2017
+- purchaser: totals.transactions >=1; productRevenue is not null. fullVisitorId field is user id.
+- Add condition "product.productRevenue is not null" to calculate correctly
 
 ```sql
 SELECT 
@@ -155,6 +168,10 @@ GROUP BY month;
 
 ***
 #### 6. Average amount of money spent per session. Only include purchaser data in July 2017	
+- Where clause must be include "totals.transactions IS NOT NULL" and "product.productRevenue is not null"
+- avg_spend_per_session = total revenue/ total visit
+- To shorten the result, productRevenue should be divided by 1000000
+###### Notice: per visit is different to per visitor
 
 ```sql
 SELECT 
@@ -175,6 +192,10 @@ GROUP BY month;
 
 ***
 #### 7. Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017	
+- We have to    UNNEST(hits) AS hits
+               , UNNEST(hits.product) as product to get v2ProductName."
+- Add condition "product.productRevenue is not null" to calculate correctly
+- Using productQuantity to calculate quantity.
 
 ```sql
 SELECT 
@@ -207,6 +228,9 @@ ORDER BY quantity DESC;
 
 ***
 #### 8. Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase.
+- hits.eCommerceAction.action_type = '2' is view product page; hits.eCommerceAction.action_type = '3' is add to cart; hits.eCommerceAction.action_type = '6' is purchase
+- Add condition "product.productRevenue is not null"  for purchase to calculate correctly
+- To access action_type, you only need unnest hits
 
 ```sql
 WITH product_view as (
