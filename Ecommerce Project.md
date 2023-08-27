@@ -7,10 +7,24 @@ Click [here](https://console.cloud.google.com/bigquery?sq=419516868446:ee029ce0d
   - [Solution](#solution)
     
 ## Source
-- Table Schema [here](https://support.google.com/analytics/answer/3437719?hl=en)
-- Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
-- Discription Table:
+#### 1. Table Schema [here](https://support.google.com/analytics/answer/3437719?hl=en)
+- Datasets
+
+For each Analytics view that is enabled for BigQuery integration, a dataset is added using the view ID as the name.
+
+- Tables
+Within each dataset, a table is imported for each day of export. Daily tables have the format "ga_sessions_YYYYMMDD".
+
+Intraday data is imported at least three times a day. Intraday tables have the format "ga_sessions_intraday_YYYYMMDD". During the same day, each import of intraday data overwrites the previous import in the same table.
+
+When the daily import is complete, the intraday table from the previous day is deleted. For the current day, until the first intraday import, there is no intraday table. If an intraday-table write fails, then the previous day's intraday table is preserved.
+
+Data for the current day is not final until the daily import is complete. You may notice differences between intraday and daily data based on active user sessions that cross the time boundary of last intraday import.
+ 
+#### 2. Discription Table:
 <img src="https://github.com/Hoaithomint/SQL/assets/141213880/7cd3b640-30ad-4bfe-99a0-0d7035b06e8d" alt="Image" width="900">
+
+#### 3. Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
 
 ## Case Study Questions
 1. Calculate total visit, pageview, transaction for Jan, Feb and March 2017 order by month
