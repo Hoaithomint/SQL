@@ -7,7 +7,10 @@ Click [here](https://console.cloud.google.com/bigquery?sq=419516868446:ee029ce0d
   - [Solution](#solution)
     
 ## Source
-#### 1. Table Schema [here](https://support.google.com/analytics/answer/3437719?hl=en)
+
+#### 1. Dataset [here](https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1sbigquery-public-data!2sgoogle_analytics_sample!3sga_sessions_20170801)
+   
+#### 2. Table Schema [here](https://support.google.com/analytics/answer/3437719?hl=en)
 - Datasets
 
 For each Analytics view that is enabled for BigQuery integration, a dataset is added using the view ID as the name.
@@ -21,10 +24,10 @@ When the daily import is complete, the intraday table from the previous day is d
 
 Data for the current day is not final until the daily import is complete. You may notice differences between intraday and daily data based on active user sessions that cross the time boundary of last intraday import.
  
-#### 2. Discription Table:
+#### 3. Discription Table:
 <img src="https://github.com/Hoaithomint/SQL/assets/141213880/7cd3b640-30ad-4bfe-99a0-0d7035b06e8d" alt="Image" width="900">
 
-#### 3. Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
+#### 4. Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
 
 ## Case Study Questions
 1. Calculate total visit, pageview, transaction for Jan, Feb and March 2017 order by month
