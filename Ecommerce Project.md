@@ -1,9 +1,16 @@
 # ECOMMERCE PROJECT
+Click [here](https://console.cloud.google.com/bigquery?sq=419516868446:ee029ce0d51b402aa4de14f41b7a2950) to see my origin code on BigQuery
 
+## Table Of Contents
+  - [Source](#source)
+  - [Case Study Questions](#case-study-questions)
+  - [Solution](#solution)
+    
+## Source
 - Table Schema [here](https://support.google.com/analytics/answer/3437719?hl=en)
 - Format Element [here](https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements)
-- Origin code on BigQuery [here](https://console.cloud.google.com/bigquery?sq=419516868446:ee029ce0d51b402aa4de14f41b7a2950)
-
+- Discription Table:
+<img src="https://github.com/Hoaithomint/SQL/assets/141213880/7cd3b640-30ad-4bfe-99a0-0d7035b06e8d" alt="Image" width="900">
 
 ## Case Study Questions
 1. Calculate total visit, pageview, transaction for Jan, Feb and March 2017 order by month
