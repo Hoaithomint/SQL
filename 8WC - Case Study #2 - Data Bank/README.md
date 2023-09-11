@@ -40,12 +40,12 @@ Just like popular cryptocurrency platforms - Data Bank is also run off a network
 This regions table contains the region_id and their respective region_name values
 
 |region_id	|region_name|
-|-------------|-----------|
-|1	       |Africa     |      
-|2	       |America    |
-|3	       |Asia       |
-|4	       |Europe     |
-|5	       |Oceania    |
+|-----------|-----------|
+|1	        |Africa     |      
+|2	        |America    |
+|3	        |Asia       |
+|4	        |Europe     |
+|5	        |Oceania    |
 
 - **Table 2: Customer Nodes**
 
