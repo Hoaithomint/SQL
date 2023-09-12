@@ -55,35 +55,35 @@ This random distribution changes frequently to reduce the risk of hackers gettin
 
 Below is a sample of the top 10 rows of the data_bank.customer_nodes
 
-|customer_id	|region_id	|node_id	|start_date	|end_date  |
+|customer_id	|region_id	  |node_id	    |start_date	  |end_date  |
 |-------------|-------------|-------------|-------------|----------|
-|1	       |3	       |4	       |2020-01-02	|2020-01-03|
-|2	       |3	       |5	       |2020-01-03	|2020-01-17|
-|3	       |5	       |4	       |2020-01-27	|2020-02-18|
-|4	       |5	       |4	       |2020-01-07	|2020-01-19|
-|5	       |3	       |3	       |2020-01-15	|2020-01-23|
-|6	       |1	       |1	       |2020-01-11	|2020-02-06|
-|7	       |2	       |5	       |2020-01-20	|2020-02-04|
-|8	       |1	       |2	       |2020-01-15	|2020-01-28|
-|9	       |4	       |5	       |2020-01-21	|2020-01-25|
-|10	       |3	       |4	       |2020-01-13	|2020-01-14|
+|1	          |3	          |4	          |2020-01-02	  |2020-01-03|
+|2	          |3	          |5	          |2020-01-03  	|2020-01-17|
+|3	          |5	          |4	          |2020-01-27	  |2020-02-18|
+|4	          |5	          |4	          |2020-01-07	  |2020-01-19|
+|5	          |3	          |3	          |2020-01-15	  |2020-01-23|
+|6	          |1	          |1	          |2020-01-11	  |2020-02-06|
+|7	          |2	          |5	          |2020-01-20	  |2020-02-04|
+|8	          |1	          |2	          |2020-01-15	  |2020-01-28|
+|9	          |4	          |5	          |2020-01-21  	|2020-01-25|
+|10	          |3	          |4	          |2020-01-13	  |2020-01-14|
 
 - **Table 3: Customer Transactions**
 
 This table stores all customer deposits, withdrawals and purchases made using their Data Bank debit card.
 
 |customer_id|	txn_date	|txn_type	|txn_amount|
-|-----------|---------------|-------------|----------|
-|429	     |2020-01-21	|deposit	|82        |
-|155	     |2020-01-10	|deposit	|712       |
-|398	     |2020-01-01	|deposit	|196       |
-|255	     |2020-01-14	|deposit	|563       |
-|185	     |2020-01-29	|deposit	|626       |
-|309	     |2020-01-13	|deposit	|995       |
-|312	     |2020-01-20	|deposit	|485       |
+|-----------|-----------|---------|----------|
+|429	      |2020-01-21	|deposit	|82        |
+|155	      |2020-01-10	|deposit	|712       |
+|398	      |2020-01-01	|deposit	|196       |
+|255	      |2020-01-14	|deposit	|563       |
+|185	      |2020-01-29	|deposit	|626       |
+|309	      |2020-01-13	|deposit	|995       |
+|312	      |2020-01-20	|deposit	|485       |
 |376        |2020-01-03	|deposit	|706       |
-|188	     |2020-01-13	|deposit	|601       |
-|138	     |2020-01-11	|deposit	|520       |
+|188	      |2020-01-13	|deposit	|601       |
+|138	      |2020-01-11	|deposit	|520       |
 
 Entity Relationship Diagram
 -
@@ -113,12 +113,117 @@ The following case study questions include some general data exploration analysi
 Solution
 -
 
-###  1. What is the unique count and total amount for each transaction type?
+### A. Customer Nodes Exploration
 
+#### 1. How many unique nodes are there on the Data Bank system?
 ```sql
-SELECT txn_type,
-       count(*) AS unique_count,
-       sum(txn_amount) AS total_amont
-FROM customer_transactions
-GROUP BY txn_type;
-``` 
+SELECT COUNT(DISTINCT node_id) AS unique_nodes
+FROM data_bank.customer_nodes;
+```
+##### Result set:
+
+#### 2. How many customers are allocated to each region?
+```sql
+SELECT
+    region_name AS region
+    ,COUNT(DISTINCT customer_id) AS customers
+FROM data_bank.customer_nodes c
+LEFT JOIN data_bank.regions r
+USING (region_id)
+GROUP BY region_name
+ORDER BY customers DESC;
+```
+##### Result set:
+
+#### 3.How many days on average are customers reallocated to a different node?
+```sql
+SELECT  ROUND(AVG(DATEDIFF(end_date, start_date))) AS avg_day
+FROM data_bank.customer_nodes
+WHERE end_date <> '9999-12-31';
+```
+##### Result set:
+
+
+#### 4.What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
+```sql
+SELECT
+    region_name AS region
+    ,ROUND(AVG(DATEDIFF(end_date, start_date))) AS avg_day
+FROM data_bank.customer_nodes c
+JOIN data_bank.regions r
+USING (region_id)
+WHERE end_date <> '9999-12-31'
+GROUP BY region;
+```
+##### Result set:
+
+### B. Customer Transactions
+
+#### 1. What is the unique count and total amount for each transaction type?
+```sql
+SELECT
+    txn_type AS transaction_type
+    ,COUNT(*) AS Unique_count
+    ,SUM(txn_amount) AS total_amount
+FROM data_bank.customer_transactions
+GROUP BY transaction_type;
+```
+##### Result set:
+
+#### 2. What is the average total historical deposit counts and amounts for all customers?
+```sql
+SELECT
+    ROUND(COUNT(customer_id)/(SELECT COUNT(DISTINCT customer_id)
+                              FROM data_bank.customer_transactions)) AS avg_total_deposit_count
+    ,ROUND(AVG(txn_amount)) AS Aavg_total_amount
+FROM data_bank.customer_transactions
+WHERE txn_type = 'deposit';
+```
+##### Result set:
+
+#### 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+```sql
+WITH count_type_txt AS (
+    SELECT
+        DATE_FORMAT(txn_date,'%m-%Y') AS month
+        ,customer_id
+        ,SUM(CASE WHEN txn_type = 'deposit' THEN 1 ELSE 0 END) AS deposit
+        ,SUM(CASE WHEN txn_type = 'purchase' THEN 1 ELSE 0 END) AS purchase
+        ,SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal
+    FROM data_bank.customer_transactions
+    GROUP BY month, customer_id
+    ORDER BY month, customer_id
+)
+SELECT
+    month
+    ,COUNT(customer_id) AS no_customer
+FROM count_type_txt	
+WHERE (deposit > 1 AND purchase = 1)
+    OR (deposit > 1 AND withdrawal = 1)
+GROUP BY month;
+```
+##### Result set:
+    
+#### 4. What is the closing balance for each customer at the end of the month?
+```sql
+WITH month_amount AS (
+    SELECT
+        DATE_FORMAT(txn_date,'%m-%Y') AS month
+        ,customer_id
+        ,SUM(CASE WHEN txn_type = 'deposit' THEN txn_amount ELSE -txn_amount END) AS month_amount
+    FROM data_bank.customer_transactions
+    GROUP BY month, customer_id
+    ORDER BY customer_id, month
+)
+SELECT
+    month
+    ,customer_id
+    ,SUM(month_amount) OVER(PARTITION BY customer_id
+                            ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
+FROM month_amount	
+ORDER BY customer_id, month;
+```
+##### Result set:
+
+#### 5. What is the percentage of customers who increase their closing balance by more than 5%?
+
