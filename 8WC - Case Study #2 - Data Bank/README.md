@@ -121,6 +121,9 @@ SELECT COUNT(DISTINCT node_id) AS unique_nodes
 FROM data_bank.customer_nodes;
 ```
 ##### Result set:
+|unique_nodes|
+|------------|
+|5           |
 
 #### 2. How many customers are allocated to each region?
 ```sql
@@ -134,6 +137,14 @@ GROUP BY region_name
 ORDER BY customers DESC;
 ```
 ##### Result set:
+|region	  |customers |
+|---------|----------|
+|Australia|	110      |
+|America	|105       |
+|Africa	  |102       |
+|Asia	    |95        |
+|Europe	  |88        |
+
 
 #### 3.How many days on average are customers reallocated to a different node?
 ```sql
@@ -142,6 +153,9 @@ FROM data_bank.customer_nodes
 WHERE end_date <> '9999-12-31';
 ```
 ##### Result set:
+|avg_day|
+|-------|
+|15     |
 
 
 #### 4.What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
@@ -156,6 +170,13 @@ WHERE end_date <> '9999-12-31'
 GROUP BY region;
 ```
 ##### Result set:
+|region	    |avg_day|
+|-----------|-------|
+|Africa	    |15     |
+|Europe	    |15     |
+|Australia	|15     |
+|America	  |15     |
+|Asia	      |14     |
 
 ### B. Customer Transactions
 
@@ -163,23 +184,32 @@ GROUP BY region;
 ```sql
 SELECT
     txn_type AS transaction_type
-    ,COUNT(*) AS Unique_count
+    ,COUNT(*) AS unique_count
     ,SUM(txn_amount) AS total_amount
 FROM data_bank.customer_transactions
 GROUP BY transaction_type;
 ```
 ##### Result set:
+|transaction_type	|unique_count	|total_amount|
+|-----------------|-------------|------------|
+|deposit	        |2671	        |1359168     |
+|withdrawal	      |1580	        |793003      |
+|purchase	        |1617	        |806537      |
+
 
 #### 2. What is the average total historical deposit counts and amounts for all customers?
 ```sql
 SELECT
     ROUND(COUNT(customer_id)/(SELECT COUNT(DISTINCT customer_id)
                               FROM data_bank.customer_transactions)) AS avg_total_deposit_count
-    ,ROUND(AVG(txn_amount)) AS Aavg_total_amount
+    ,ROUND(AVG(txn_amount)) AS avg_total_amount
 FROM data_bank.customer_transactions
 WHERE txn_type = 'deposit';
 ```
 ##### Result set:
+|avg_total_deposit_count|avg_total_amount|
+|-----------------------|----------------|
+|5                      |509             |
 
 #### 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 ```sql
@@ -203,6 +233,13 @@ WHERE (deposit > 1 AND purchase = 1)
 GROUP BY month;
 ```
 ##### Result set:
+|month	|no_customer|
+|-------|-----------|
+|01-2020|	115       |
+|02-2020|	108       |
+|03-2020|	113       |
+|04-2020|	50        |
+
     
 #### 4. What is the closing balance for each customer at the end of the month?
 ```sql
