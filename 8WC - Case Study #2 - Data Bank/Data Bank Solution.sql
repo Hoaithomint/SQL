@@ -13,7 +13,7 @@ FROM data_bank.customer_nodes;
 
 -- 2. How many customers are allocated to each region?
 SELECT
-	region_name AS region
+     region_name AS region
     ,COUNT(DISTINCT customer_id) AS customers
 FROM data_bank.customer_nodes c
 LEFT JOIN data_bank.regions r
@@ -28,7 +28,7 @@ WHERE end_date <> '9999-12-31';
 
 -- 4.What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 SELECT  
-	region_name AS region
+     region_name AS region
     ,ROUND(AVG(DATEDIFF(end_date, start_date))) AS avg_day
 FROM data_bank.customer_nodes c
 JOIN data_bank.regions r
@@ -40,7 +40,7 @@ GROUP BY region;
 
 -- 1. What is the unique count and total amount for each transaction type?
 SELECT
-	txn_type AS transaction_type
+     txn_type AS transaction_type
     ,COUNT(*) AS Unique_count
     ,SUM(txn_amount) AS total_amount
 FROM data_bank.customer_transactions
@@ -48,9 +48,8 @@ GROUP BY transaction_type;
 
 -- 2. What is the average total historical deposit counts and amounts for all customers?
 SELECT
-	ROUND(COUNT(customer_id)/
-		(SELECT COUNT(DISTINCT customer_id) 
-        FROM data_bank.customer_transactions)) AS avg_total_deposit_count
+    ROUND(COUNT(customer_id)/(SELECT COUNT(DISTINCT customer_id) 
+        		     FROM data_bank.customer_transactions)) AS avg_total_deposit_count
     ,ROUND(AVG(txn_amount)) AS Aavg_total_amount
 FROM data_bank.customer_transactions
 WHERE txn_type = 'deposit';
@@ -58,7 +57,7 @@ WHERE txn_type = 'deposit';
 -- 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 SELECT month, COUNT(customer_id)
 FROM (
-	SElECT 
+	SELECT 
 		DATE_FORMAT(txn_date,'%m-%Y') AS month
 		,customer_id
 		,SUM(CASE WHEN txn_type = 'deposit' THEN 1 ELSE 0 END) AS deposit
@@ -75,9 +74,9 @@ GROUP BY month;
 SELECT month
 		,customer_id
         ,SUM(month_amount) OVER(PARTITION BY customer_id 
-								ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
+				ORDER BY month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS closing_balance
 FROM (
-	SElECT 
+	SELECT 
 		DATE_FORMAT(txn_date,'%m-%Y') AS month
 		,customer_id
 		,SUM(CASE WHEN txn_type = 'deposit' THEN txn_amount ELSE -txn_amount END) AS month_amount
